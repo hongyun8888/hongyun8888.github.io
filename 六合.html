@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>彩票号码分析系统（专业版）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 10px;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .login-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .login-form {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        input[type="password"], input[type="text"], input[type="number"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .admin-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .data-input {
+            margin: 20px 0;
+        }
+        
+        .period-input {
+            margin-bottom: 15px;
+        }
+        
+        .numbers-input {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .number-input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        .search-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+        }
+        
+        .search-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-input input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            flex-grow: 1;
+        }
+        
+        .history-data {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .history-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .period-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        
+        .numbers-display {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .number-tag {
+            background-color: #4CAF50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .detail-view {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8dc;
+            border-radius: 5px;
+        }
+        
+        .back-button {
+            padding: 8px 15px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        
+        .position-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+        
+        .position-item {
+            padding: 10px;
+            background-color: #e8f5e8;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .position-item:hover {
+            background-color: #d4edda;
+        }
+        
+        .category-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .category-item {
+            padding: 10px;
+            background-color: #e7f3ff;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .category-item:hover {
+            background-color: #d0e7ff;
+        }
+        
+        .sub-category-detail {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .analysis-card {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .analysis-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .analysis-value {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        
+        .chart-area {
+            height: 200px;
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .chart-line {
+            position: absolute;
+            height: 1px;
+            background-color: #ccc;
+        }
+        
+        .gap-analysis {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .gap-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .gap-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .gap-stat-item {
+            padding: 8px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .numbers-input {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+            
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .login-form {
+                flex-direction: column;
+            }
+            
+            input[type="password"], input[type="text"], input[type="number"] {
+                width: 100%;
+            }
+            
+            .search-input {
+                flex-direction: column;
+            }
+            
+            .category-list {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>彩票号码分析系统（专业版）</h1>
+        
+        <div class="login-section">
+            <div class="login-form">
+                <input type="password" id="passwordInput" placeholder="输入管理员密码">
+                <button onclick="login()">登录</button>
+            </div>
+        </div>
+        
+        <div class="admin-panel" id="adminPanel">
+            <h3>管理员面板</h3>
+            <div class="data-input">
+                <div class="period-input">
+                    <label>期数: <input type="text" id="periodNumber" placeholder="例如: 2023001"></label>
+                    <button onclick="addPeriodData()">添加期数数据</button>
+                </div>
+                <div class="numbers-input">
+                    <div>
+                        <label>1号位:</label>
+                        <input type="number" id="num1" class="number-input" min="1" max="49">
+                    </div>
+                    <div>
+                        <label>2号位:</label>
+                        <input type="number" id="num2" class="number-input" min="1" max="49">
+                    </div>
+                    <div>
+                        <label>3号位:</label>
+                        <input type="number" id="num3" class="number-input" min="1" max="49">
+                    </div>
+                    <div>
+                        <label>4号位:</label>
+                        <input type="number" id="num4" class="number-input" min="1" max="49">
+                    </div>
+                    <div>
+                        <label>5号位:</label>
+                        <input type="number" id="num5" class="number-input" min="1" max="49">
+                    </div>
+                    <div>
+                        <label>6号位:</label>
+                        <input type="number" id="num6" class="number-input" min="1" max="49">
+                    </div>
+                    <div>
+                        <label>7号位:</label>
+                        <input type="number" id="num7" class="number-input" min="1" max="49">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="search-section">
+            <h3>搜索历史数据</h3>
+            <div class="search-input">
+                <input type="text" id="searchInput" placeholder="输入期数搜索...">
+                <button onclick="searchPeriod()">搜索</button>
+            </div>
+        </div>
+        
+        <div class="history-data" id="historyDataList">
+            <!-- 历史数据将在这里显示 -->
+        </div>
+        
+        <div class="detail-view" id="detailView">
+            <button class="back-button" onclick="goBack()">← 返回</button>
+            <h3 id="detailHeader">详细数据</h3>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 系统配置
+        const ADMIN_PASSWORD = "2207089242oyzr";
+        let isLoggedIn = false;
+        let historicalData = JSON.parse(localStorage.getItem('lotteryHistory')) || [];
+        let currentView = 'history'; // 'history', 'position', 'category'
+        let currentPeriod = null;
+        let currentPosition = null;
+        let currentCategory = null;
+        
+        // 分类映射
+        const classifications = {
+            // 生肖分类
+            zodiac: {
+                map: {
+                    1: '马', 13: '马', 25: '马', 37: '马', 49: '马',
+                    2: '蛇', 14: '蛇', 26: '蛇', 38: '蛇',
+                    3: '龙', 15: '龙', 27: '龙', 39: '龙',
+                    4: '兔', 16: '兔', 28: '兔', 40: '兔',
+                    5: '虎', 17: '虎', 29: '虎', 41: '虎',
+                    6: '牛', 18: '牛', 30: '牛', 42: '牛',
+                    7: '鼠', 19: '鼠', 31: '鼠', 43: '鼠',
+                    8: '猪', 20: '猪', 32: '猪', 44: '猪',
+                    9: '狗', 21: '狗', 33: '狗', 45: '狗',
+                    10: '鸡', 22: '鸡', 34: '鸡', 46: '鸡',
+                    11: '猴', 23: '猴', 35: '猴', 47: '猴',
+                    12: '羊', 24: '羊', 36: '羊', 48: '羊'
+                },
+                categories: ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪']
+            },
+            // 五行分类
+            element: {
+                map: {
+                    4: '金', 5: '金', 12: '金', 13: '金', 26: '金', 27: '金', 34: '金', 35: '金', 42: '金', 43: '金',
+                    8: '木', 9: '木', 16: '木', 17: '木', 24: '木', 25: '木', 38: '木', 39: '木', 46: '木', 47: '木',
+                    1: '水', 14: '水', 15: '水', 22: '水', 23: '水', 30: '水', 31: '水', 44: '水', 45: '水',
+                    2: '火', 3: '火', 10: '火', 11: '火', 18: '火', 19: '火', 32: '火', 33: '火', 40: '火', 41: '火', 49: '火',
+                    6: '土', 7: '土', 20: '土', 21: '土', 28: '土', 29: '土', 36: '土', 37: '土'
+                },
+                categories: ['金', '木', '水', '火', '土']
+            },
+            // 单波分类
+            color: {
+                map: {
+                    1: '红单', 7: '红单', 13: '红单', 19: '红单', 23: '红单', 29: '红单', 35: '红单', 45: '红单',
+                    2: '红双', 8: '红双', 12: '红双', 18: '红双', 19: '红双', 24: '红双', 30: '红双', 40: '红双', 46: '红双',
+                    5: '绿单', 11: '绿单', 17: '绿单', 21: '绿单', 27: '绿单', 33: '绿单', 39: '绿单', 43: '绿单', 49: '绿单',
+                    6: '绿双', 16: '绿双', 22: '绿双', 28: '绿双', 32: '绿双', 38: '绿双', 44: '绿双',
+                    3: '蓝单', 9: '蓝单', 15: '蓝单', 25: '蓝单', 31: '蓝单', 37: '蓝单', 41: '蓝单', 47: '蓝单',
+                    4: '蓝双', 10: '蓝双', 14: '蓝双', 20: '蓝双', 26: '蓝双', 36: '蓝双', 42: '蓝双', 48: '蓝双'
+                },
+                categories: ['红单', '红双', '绿单', '绿双', '蓝单', '蓝双']
+            },
+            // 尾号分类
+            tail: {
+                map: {
+                    1: 1, 11: 1, 21: 1, 31: 1, 41: 1,
+                    2: 2, 12: 2, 22: 2, 32: 2, 42: 2,
+                    3: 3, 13: 3, 23: 3, 33: 3, 43: 3,
+                    4: 4, 14: 4, 24: 4, 34: 4, 44: 4,
+                    5: 5, 15: 5, 25: 5, 35: 5, 45: 5,
+                    6: 6, 16: 6, 26: 6, 36: 6, 46: 6,
+                    7: 7, 17: 7, 27: 7, 37: 7, 47: 7,
+                    8: 8, 18: 8, 28: 8, 38: 8, 48: 8,
+                    9: 9, 19: 9, 29: 9, 39: 9, 49: 9,
+                    10: 0, 20: 0, 30: 0, 40: 0
+                },
+                categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            },
+            // 头号分类
+            head: {
+                map: {},
+                categories: [0, 1, 2, 3, 4]
+            },
+            // 大小单双分类
+            sizeOddEven: {
+                map: {},
+                categories: ['小单', '小双', '大单', '大双']
+            },
+            // 7余分类
+            remainder7: {
+                map: {},
+                categories: [0, 1, 2, 3, 4, 5, 6]
+            },
+            // 合尾分类
+            sumTail: {
+                map: {},
+                categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            }
+        };
+        
+        // 初始化分类映射
+        function initClassifications() {
+            // 头号分类
+            for (let i = 1; i <= 49; i++) {
+                if (i < 10) classifications.head.map[i] = 0;
+                else classifications.head.map[i] = Math.floor(i / 10);
+            }
+            
+            // 大小单双分类
+            for (let i = 1; i <= 49; i++) {
+                if (i <= 24 && i % 2 === 0) classifications.sizeOddEven.map[i] = '小双';
+                else if (i <= 24 && i % 2 === 1) classifications.sizeOddEven.map[i] = '小单';
+                else if (i >= 25 && i % 2 === 0) classifications.sizeOddEven.map[i] = '大双';
+                else if (i >= 25 && i % 2 === 1) classifications.sizeOddEven.map[i] = '大单';
+            }
+            
+            // 7余分类
+            for (let i = 1; i <= 49; i++) {
+                classifications.remainder7.map[i] = i % 7;
+            }
+            
+            // 合尾分类
+            for (let i = 1; i <= 49; i++) {
+                const sum = i.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+                classifications.sumTail.map[i] = sum % 10;
+            }
+        }
+        
+        // 计算隔开数据
+        function calculateGapAnalysis() {
+            if (historicalData.length < 2) return {};
+            
+            const gapAnalysis = {
+                numbers: {}, // 数字的隔开分析
+                categories: {} // 各分类的隔开分析
+            };
+            
+            // 初始化所有数字的隔开计数
+            for (let i = 1; i <= 49; i++) {
+                gapAnalysis.numbers[i] = { continuous: 0, gaps: {} };
+            }
+            
+            // 遍历历史数据计算隔开情况
+            for (let i = 1; i < historicalData.length; i++) {
+                const prevPeriod = historicalData[i - 1];
+                const currPeriod = historicalData[i];
+                
+                // 检查每个位置的数字是否连续出现
+                for (let pos = 0; pos < 7; pos++) {
+                    const prevNum = prevPeriod.numbers[pos];
+                    const currNum = currPeriod.numbers[pos];
+                    
+                    // 检查当前数字是否与上一期同一位置的数字相同（连续）
+                    if (prevNum === currNum) {
+                        gapAnalysis.numbers[currNum].continuous++;
+                    } else {
+                        // 计算间隔
+                        let gap = 1;
+                        for (let j = i - 2; j >= 0; j--) {
+                            const prevPrevPeriod = historicalData[j];
+                            if (prevPrevPeriod.numbers[pos] === currNum) {
+                                gap = i - j - 1;
+                                break;
+                            }
+                        }
+                        
+                        if (gap > 0) {
+                            if (!gapAnalysis.numbers[currNum].gaps[gap]) {
+                                gapAnalysis.numbers[currNum].gaps[gap] = 0;
+                            }
+                            gapAnalysis.numbers[currNum].gaps[gap]++;
+                        }
+                    }
+                }
+            }
+            
+            // 计算各类别的隔开分析
+            Object.keys(classifications).forEach(catKey => {
+                const category = classifications[catKey];
+                gapAnalysis.categories[catKey] = {};
+                
+                // 初始化每个类别的隔开计数
+                category.categories.forEach(cat => {
+                    gapAnalysis.categories[catKey][cat] = { continuous: 0, gaps: {} };
+                });
+                
+                // 计算每个类别的隔开情况
+                for (let i = 1; i < historicalData.length; i++) {
+                    const prevPeriod = historicalData[i - 1];
+                    const currPeriod = historicalData[i];
+                    
+                    for (let pos = 0; pos < 7; pos++) {
+                        const prevNum = prevPeriod.numbers[pos];
+                        const currNum = currPeriod.numbers[pos];
+                        
+                        const prevCat = category.map[prevNum];
+                        const currCat = category.map[currNum];
+                        
+                        if (prevCat && currCat) {
+                            if (prevCat === currCat) {
+                                gapAnalysis.categories[catKey][currCat].continuous++;
+                            } else {
+                                // 计算类别间隔
+                                let gap = 1;
+                                for (let j = i - 2; j >= 0; j--) {
+                                    const prevPrevPeriod = historicalData[j];
+                                    if (category.map[prevPrevPeriod.numbers[pos]] === currCat) {
+                                        gap = i - j - 1;
+                                        break;
+                                    }
+                                }
+                                
+                                if (gap > 0) {
+                                    if (!gapAnalysis.categories[catKey][currCat].gaps[gap]) {
+                                        gapAnalysis.categories[catKey][currCat].gaps[gap] = 0;
+                                    }
+                                    gapAnalysis.categories[catKey][currCat].gaps[gap]++;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            return gapAnalysis;
+        }
+        
+        // 登录功能
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                isLoggedIn = true;
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                alert('登录成功！您可以添加历史数据了。');
+            } else {
+                alert('密码错误！');
+            }
+        }
+        
+        // 添加期数数据
+        function addPeriodData() {
+            const period = document.getElementById('periodNumber').value;
+            if (!period) {
+                alert('请输入期数！');
+                return;
+            }
+            
+            const numbers = [
+                parseInt(document.getElementById('num1').value),
+                parseInt(document.getElementById('num2').value),
+                parseInt(document.getElementById('num3').value),
+                parseInt(document.getElementById('num4').value),
+                parseInt(document.getElementById('num5').value),
+                parseInt(document.getElementById('num6').value),
+                parseInt(document.getElementById('num7').value)
+            ];
+            
+            // 验证输入
+            for (let num of numbers) {
+                if (isNaN(num) || num < 1 || num > 49) {
+                    alert('请输入1到49之间的有效数字！');
+                    return;
+                }
+            }
+            
+            // 检查期数是否已存在
+            if (historicalData.some(data => data.period === period)) {
+                alert('该期数已存在！');
+                return;
+            }
+            
+            // 添加新数据
+            historicalData.push({
+                period: period,
+                numbers: numbers,
+                timestamp: new Date().toISOString()
+            });
+            
+            // 保存到本地存储
+            localStorage.setItem('lotteryHistory', JSON.stringify(historicalData));
+            
+            // 更新显示
+            renderHistoryData();
+            
+            // 清空输入
+            document.getElementById('periodNumber').value = '';
+            for (let i = 1; i <= 7; i++) {
+                document.getElementById(`num${i}`).value = '';
+            }
+            
+            alert('数据添加成功！');
+        }
+        
+        // 搜索期数
+        function searchPeriod() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (!searchTerm) {
+                renderHistoryData();
+                return;
+            }
+            
+            const filteredData = historicalData.filter(data => 
+                data.period.toLowerCase().includes(searchTerm)
+            );
+            
+            renderHistoryData(filteredData);
+        }
+        
+        // 渲染历史数据
+        function renderHistoryData(data = historicalData) {
+            const container = document.getElementById('historyDataList');
+            container.innerHTML = '';
+            
+            // 按时间倒序排列
+            const sortedData = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            sortedData.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.onclick = () => showPeriodDetail(item);
+                
+                const periodHeader = document.createElement('div');
+                periodHeader.className = 'period-header';
+                periodHeader.textContent = `期数: ${item.period}`;
+                
+                const numbersDisplay = document.createElement('div');
+                numbersDisplay.className = 'numbers-display';
+                
+                item.numbers.forEach(num => {
+                    const numberTag = document.createElement('span');
+                    numberTag.className = 'number-tag';
+                    numberTag.textContent = num;
+                    numbersDisplay.appendChild(numberTag);
+                });
+                
+                historyItem.appendChild(periodHeader);
+                historyItem.appendChild(numbersDisplay);
+                container.appendChild(historyItem);
+            });
+        }
+        
+        // 显示期数详情
+        function showPeriodDetail(periodData) {
+            currentView = 'position';
+            currentPeriod = periodData;
+            
+            document.getElementById('detailView').style.display = 'block';
+            document.getElementById('detailHeader').textContent = `期数 ${periodData.period} 详情`;
+            
+            let content = '<h4>选择号码位</h4>';
+            content += '<div class="position-list">';
+            
+            for (let i = 0; i < 7; i++) {
+                content += `
+                    <div class="position-item" onclick="showPositionDetail(${i})">
+                        ${i+1}号位 (${periodData.numbers[i]})
+                    </div>
+                `;
+            }
+            
+            content += '</div>';
+            document.getElementById('detailContent').innerHTML = content;
+        }
+        
+        // 显示号码位详情
+        function showPositionDetail(positionIndex) {
+            currentPosition = positionIndex;
+            const number = currentPeriod.numbers[positionIndex];
+            
+            document.getElementById('detailHeader').textContent = `期数 ${currentPeriod.period} - ${positionIndex+1}号位 (${number})`;
+            
+            let content = '<h4>选择分类</h4>';
+            content += '<div class="category-list">';
+            
+            // 添加分类选项
+            content += '<div class="category-item" onclick="showCategoryDetail(\'zodiac\')">生肖比</div>';
+            content += '<div class="category-item" onclick="showCategoryDetail(\'element\')">五行比</div>';
+            content += '<div class="category-item" onclick="showCategoryDetail(\'color\')">单波比</div>';
+            content += '<div class="category-item" onclick="showCategoryDetail(\'tail\')">尾号比</div>';
+            content += '<div class="category-item" onclick="showCategoryDetail(\'head\')">头号比</div>';
+            content += '<div class="category-item" onclick="showCategoryDetail(\'sizeOddEven\')">大小单双比</div>';
+            content += '<div class="category-item" onclick="showCategoryDetail(\'remainder7\')">7余比</div>';
+            content += '<div class="category-item" onclick="showCategoryDetail(\'sumTail\')">合尾比</div>';
+            content += '<div class="category-item" onclick="showGapAnalysis()">隔开数据</div>';
+            
+            content += '</div>';
+            document.getElementById('detailContent').innerHTML = content;
+        }
+        
+        // 显示分类详情
+        function showCategoryDetail(category) {
+            currentCategory = category;
+            const number = currentPeriod.numbers[currentPosition];
+            const categoryName = classifications[category].map[number] || '未知';
+            
+            document.getElementById('detailHeader').textContent = `${classifications[category].categories.join(', ')} - 当前: ${categoryName}`;
+            
+            // 生成分析数据
+            const analysisData = generateAnalysisData(category, number);
+            
+            let content = '<div class="sub-category-detail">';
+            content += `<h4>${categoryName} 详细分析</h4>`;
+            
+            content += '<div class="analysis-grid">';
+            content += `
+                <div class="analysis-card">
+                    <div class="analysis-title">欲出率</div>
+                    <div class="analysis-value">${analysisData.emergenceRate}%</div>
+                </div>
+                <div class="analysis-card">
+                    <div class="analysis-title">均线分析</div>
+                    <div class="analysis-value">${analysisData.averageLine}</div>
+                </div>
+                <div class="analysis-card">
+                    <div class="analysis-title">指数预测</div>
+                    <div class="analysis-value">${analysisData.indexPrediction}</div>
+                </div>
+                <div class="analysis-card">
+                    <div class="analysis-title">智能规律</div>
+                    <div class="analysis-value">${analysisData.intelligentPattern}</div>
+                </div>
+                <div class="analysis-card">
+                    <div class="analysis-title">实时热点</div>
+                    <div class="analysis-value">${analysisData.hotSpot}</div>
+                </div>
+                <div class="analysis-card">
+                    <div class="analysis-title">实时遗漏</div>
+                    <div class="analysis-value">${analysisData.omission}</div>
+                </div>
+            `;
+            content += '</div>';
+            
+            // 走势图
+            content += '<div class="chart-container">';
+            content += '<h5>走势图</h5>';
+            content += '<div class="chart-area" id="chartArea"></div>';
+            content += '</div>';
+            
+            content += '</div>';
+            document.getElementById('detailContent').innerHTML = content;
+            
+            // 绘制走势图
+            drawChart();
+        }
+        
+        // 生成分析数据
+        function generateAnalysisData(category, number) {
+            // 这里是模拟分析数据，实际应用中应根据历史数据计算
+            const categoryObj = classifications[category];
+            const categoryValue = categoryObj.map[number];
+            
+            // 统计该类别在历史数据中的出现次数
+            let totalCount = 0;
+            let valueCount = 0;
+            
+            historicalData.forEach(period => {
+                period.numbers.forEach(num => {
+                    if (categoryObj.map[num]) {
+                        totalCount++;
+                        if (categoryObj.map[num] === categoryValue) {
+                            valueCount++;
+                        }
+                    }
+                });
+            });
+            
+            const emergenceRate = totalCount > 0 ? ((valueCount / totalCount) * 100).toFixed(2) : 0;
+            
+            // 计算平均间隔
+            let totalInterval = 0;
+            let count = 0;
+            let lastOccurrence = -1;
+            
+            historicalData.forEach((period, index) => {
+                period.numbers.forEach(num => {
+                    if (categoryObj.map[num] === categoryValue) {
+                        if (lastOccurrence !== -1) {
+                            totalInterval += index - lastOccurrence;
+                            count++;
+                        }
+                        lastOccurrence = index;
+                    }
+                });
+            });
+            
+            const averageLine = count > 0 ? (totalInterval / count).toFixed(1) : 'N/A';
+            
+            // 指数预测（基于最近出现频率）
+            let recentCount = 0;
+            const recentPeriods = historicalData.slice(-10); // 最近10期
+            recentPeriods.forEach(period => {
+                period.numbers.forEach(num => {
+                    if (categoryObj.map[num] === categoryValue) {
+                        recentCount++;
+                    }
+                });
+            });
+            
+            const indexPrediction = recentCount > 0 ? `近期活跃（${recentCount}次）` : '近期沉寂';
+            
+            // 智能规律（简单的周期性检测）
+            const intelligentPattern = valueCount > 0 ? '周期性出现' : '随机分布';
+            
+            // 实时热点（最近出现的频率）
+            const hotSpot = recentCount > 2 ? '热门' : recentCount > 0 ? '温热' : '冷门';
+            
+            // 实时遗漏（从上次出现到现在过了多少期）
+            let omission = 'N/A';
+            if (lastOccurrence !== -1) {
+                omission = historicalData.length - 1 - lastOccurrence;
+            }
+            
+            return {
+                emergenceRate,
+                averageLine,
+                indexPrediction,
+                intelligentPattern,
+                hotSpot,
+                omission
+            };
+        }
+        
+        // 显示隔开数据分析
+        function showGapAnalysis() {
+            document.getElementById('detailHeader').textContent = '隔开数据分析';
+            
+            const gapAnalysis = calculateGapAnalysis();
+            const number = currentPeriod.numbers[currentPosition];
+            
+            let content = '<div class="gap-analysis">';
+            content += '<h4>数字隔开分析</h4>';
+            
+            if (gapAnalysis.numbers[number]) {
+                content += `<p><strong>当前数字 ${number} 的隔开情况:</strong></p>`;
+                content += `<p>连续出现次数: ${gapAnalysis.numbers[number].continuous}</p>`;
+                
+                content += '<div class="gap-stats">';
+                for (const gap in gapAnalysis.numbers[number].gaps) {
+                    content += `<div class="gap-stat-item">隔${gap}: ${gapAnalysis.numbers[number].gaps[gap]}次</div>`;
+                }
+                content += '</div>';
+            }
+            
+            content += '<h4>各类别隔开分析</h4>';
+            
+            for (const catKey in gapAnalysis.categories) {
+                const category = classifications[catKey];
+                const categoryValue = category.map[number];
+                
+                if (categoryValue && gapAnalysis.categories[catKey][categoryValue]) {
+                    content += `<h5>${catKey} - ${categoryValue}:</h5>`;
+                    content += `<p>连续出现次数: ${gapAnalysis.categories[catKey][categoryValue].continuous}</p>`;
+                    
+                    content += '<div class="gap-stats">';
+                    for (const gap in gapAnalysis.categories[catKey][categoryValue].gaps) {
+                        content += `<div class="gap-stat-item">隔${gap}: ${gapAnalysis.categories[catKey][categoryValue].gaps[gap]}次</div>`;
+                    }
+                    content += '</div>';
+                }
+            }
+            
+            content += '</div>';
+            document.getElementById('detailContent').innerHTML = content;
+        }
+        
+        // 绘制走势图
+        function drawChart() {
+            const chartArea = document.getElementById('chartArea');
+            chartArea.innerHTML = '';
+            
+            if (historicalData.length === 0) return;
+            
+            // 简单的走势图，显示该位置上的数字变化
+            const canvas = document.createElement('canvas');
+            canvas.width = chartArea.clientWidth;
+            canvas.height = chartArea.clientHeight;
+            chartArea.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 设置背景
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制网格线
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 0.5;
+            
+            // 水平线 (代表数字范围1-49)
+            for (let i = 0; i <= 10; i++) {
+                const y = height - (i * height / 10);
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+                
+                // 标记数字
+                ctx.fillStyle = '#999';
+                ctx.font = '10px Arial';
+                ctx.fillText(Math.round(49 - (i * 49 / 10)), 5, y - 2);
+            }
+            
+            // 垂直线 (代表期数)
+            for (let i = 0; i < historicalData.length; i++) {
+                const x = (i / (historicalData.length - 1)) * width;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            
+            // 绘制数据点
+            ctx.fillStyle = '#4CAF50';
+            for (let i = 0; i < historicalData.length; i++) {
+                const x = (i / (historicalData.length - 1)) * width;
+                const num = historicalData[i].numbers[currentPosition];
+                const y = height - (num / 49) * height;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 如果是当前期，用不同颜色标记
+                if (historicalData[i].period === currentPeriod.period) {
+                    ctx.fillStyle = '#FF5722';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 6, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.fillStyle = '#4CAF50';
+                }
+            }
+            
+            // 绘制连线
+            ctx.strokeStyle = '#2196F3';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            
+            for (let i = 0; i < historicalData.length - 1; i++) {
+                const x1 = (i / (historicalData.length - 1)) * width;
+                const num1 = historicalData[i].numbers[currentPosition];
+                const y1 = height - (num1 / 49) * height;
+                
+                const x2 = ((i + 1) / (historicalData.length - 1)) * width;
+                const num2 = historicalData[i + 1].numbers[currentPosition];
+                const y2 = height - (num2 / 49) * height;
+                
+                if (i === 0) {
+                    ctx.moveTo(x1, y1);
+                }
+                ctx.lineTo(x2, y2);
+            }
+            ctx.stroke();
+        }
+        
+        // 返回上一级
+        function goBack() {
+            switch(currentView) {
+                case 'position':
+                    document.getElementById('detailHeader').textContent = `期数 ${currentPeriod.period} 详情`;
+                    let content = '<h4>选择号码位</h4>';
+                    content += '<div class="position-list">';
+                    
+                    for (let i = 0; i < 7; i++) {
+                        content += `
+                            <div class="position-item" onclick="showPositionDetail(${i})">
+                                ${i+1}号位 (${currentPeriod.numbers[i]})
+                            </div>
+                        `;
+                    }
+                    
+                    content += '</div>';
+                    document.getElementById('detailContent').innerHTML = content;
+                    break;
+                    
+                case 'category':
+                    document.getElementById('detailHeader').textContent = `期数 ${currentPeriod.period} - ${currentPosition+1}号位 (${currentPeriod.numbers[currentPosition]})`;
+                    
+                    let catContent = '<h4>选择分类</h4>';
+                    catContent += '<div class="category-list">';
+                    
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'zodiac\')">生肖比</div>';
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'element\')">五行比</div>';
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'color\')">单波比</div>';
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'tail\')">尾号比</div>';
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'head\')">头号比</div>';
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'sizeOddEven\')">大小单双比</div>';
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'remainder7\')">7余比</div>';
+                    catContent += '<div class="category-item" onclick="showCategoryDetail(\'sumTail\')">合尾比</div>';
+                    catContent += '<div class="category-item" onclick="showGapAnalysis()">隔开数据</div>';
+                    
+                    catContent += '</div>';
+                    document.getElementById('detailContent').innerHTML = catContent;
+                    break;
+                    
+                default:
+                    document.getElementById('detailView').style.display = 'none';
+                    currentView = 'history';
+                    currentPeriod = null;
+                    currentPosition = null;
+                    currentCategory = null;
+            }
+        }
+        
+        // 页面加载初始化
+        window.onload = function() {
+            initClassifications();
+            renderHistoryData();
+        };
+    </script>
+</body>
+</html>
